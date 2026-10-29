@@ -1,0 +1,1010 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kibelki LOIII</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: scena 3D budynku wypełnia ekran; panel jak szkolna tablica kierunkowa — szuflada na dole (telefon) albo prawa kolumna (desktop); piętra ułożone od góry, tak jak na elewacji */
+:root{
+  --sky:#e9edf1;
+  --bg:#ebe8e1;
+  --paper:#f8f6f1;
+  --chip:#ece8df;
+  --ink:#24262a;
+  --ink-soft:#5d6067;
+  --line:#d4cfc4;
+  --accent:#b0304c;
+  --accent-soft:#f4dfe4;
+  --on-accent:#ffffff;
+  --sign:#3b3d42;
+  --sign-ink:#f5f3ee;
+  --live:#2f8a5f;
+  --shadow:0 1px 2px rgba(30,25,20,.08),0 6px 18px rgba(30,25,20,.08);
+  --font-display:"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif;
+  --font-body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --sky:#3a4354;--bg:#14171c;--paper:#1d2128;--chip:#272c34;--ink:#ecebe6;--ink-soft:#a3a7af;--line:#30363f;
+    --accent:#e35d7d;--accent-soft:#3b1f29;--on-accent:#1a0d12;--sign:#363c46;--sign-ink:#f0eee9;--live:#4cc28a;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --sky:#3a4354;--bg:#14171c;--paper:#1d2128;--chip:#272c34;--ink:#ecebe6;--ink-soft:#a3a7af;--line:#30363f;
+  --accent:#e35d7d;--accent-soft:#3b1f29;--on-accent:#1a0d12;--sign:#363c46;--sign-ink:#f0eee9;--live:#4cc28a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+
+html{height:100%;box-sizing:border-box}
+*,*::before,*::after{box-sizing:border-box}
+body{height:100%;margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 var(--font-body);overflow:hidden;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.app{height:100%;display:grid;grid-template-rows:minmax(0,1fr) auto}
+
+/* scena */
+.stage{position:relative;min-height:0;overflow:hidden;background:var(--sky)}
+#scena{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+.hud{position:absolute;inset:0 0 auto 0;z-index:2;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:10px;
+  padding-block:12px 0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));pointer-events:none}
+.hud>*{pointer-events:auto}
+.brand{background:color-mix(in srgb,var(--paper) 86%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border:1px solid var(--line);border-radius:14px;padding:8px 14px 9px;box-shadow:var(--shadow)}
+.brand h1{margin:0;font:800 22px/1.05 var(--font-display);letter-spacing:-.015em}
+.brand h1 em{font-style:normal;color:var(--accent)}
+.live{margin:3px 0 0;display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-soft)}
+.live i{width:8px;height:8px;border-radius:50%;background:var(--ink-soft);flex:none}
+.live[data-mode="live"] i{background:var(--live);animation:puls 2.4s ease-out infinite}
+@keyframes puls{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--live) 55%,transparent)}70%,100%{box-shadow:0 0 0 7px transparent}}
+.tools{display:flex;gap:8px}
+.tool{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 13px;border-radius:12px;border:1px solid var(--line);
+  background:color-mix(in srgb,var(--paper) 88%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:var(--shadow);font-weight:700;font-size:14px}
+.tool svg{width:17px;height:17px;flex:none}
+.tool[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.hint{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:2;margin:0;padding:6px 12px;border-radius:999px;
+  background:color-mix(in srgb,var(--paper) 82%,transparent);color:var(--ink-soft);font-size:12.5px;white-space:nowrap;
+  max-width:calc(100% - 32px);overflow:hidden;text-overflow:ellipsis;transition:opacity .6s;pointer-events:none}
+.hint.gone{opacity:0}
+.toast{position:absolute;left:50%;bottom:46px;transform:translateX(-50%);z-index:3;margin:0;padding:10px 16px;border-radius:12px;
+  background:var(--ink);color:var(--bg);font-weight:700;font-size:14px;box-shadow:var(--shadow);width:max-content;max-width:calc(100% - 32px);text-align:center}
+.fallback{position:absolute;inset:0;display:grid;place-content:center;gap:6px;padding:24px;text-align:center;color:var(--ink-soft)}
+.fallback b{color:var(--ink);font:800 20px/1.2 var(--font-display)}
+
+/* panel */
+.panel{background:var(--bg);border-top:1px solid var(--line);max-height:min(56vh,480px);overflow-y:auto;overscroll-behavior:contain}
+.panel-in{display:grid;gap:14px;padding-block:14px 18px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.lbl{margin:0;font:700 11.5px/1 var(--font-body);letter-spacing:.13em;text-transform:uppercase;color:var(--ink-soft)}
+.me{display:grid;gap:7px}
+.av{width:20px;height:20px;border-radius:50%;flex:none;display:grid;place-items:center;overflow:hidden;background:var(--c);color:#fff;font:700 11px/1 var(--font-body)}
+.me-status{margin:0;font-size:14px;color:var(--ink-soft)}
+.me-status b{color:var(--ink)}
+.floors-wrap{display:grid;gap:8px}
+.floors{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.floor{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px;border-radius:16px;
+  background:var(--paper);border:1px solid var(--line);transition:border-color .2s,box-shadow .2s}
+.floor.mine{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.floor.flash{animation:flash 1.1s ease-out}
+@keyframes flash{0%{box-shadow:0 0 0 5px var(--accent-soft)}100%{box-shadow:0 0 0 0 transparent}}
+.sign{width:54px;height:54px;border:0;border-radius:12px;background:var(--sign);color:var(--sign-ink);display:grid;place-items:center;align-content:center;gap:3px;padding:0}
+.sign b{font:800 28px/.9 var(--font-display)}
+.sign small{font:700 9.5px/1 var(--font-body);letter-spacing:.18em;opacity:.85}
+.floor.busy .sign{background:var(--accent);color:var(--on-accent)}
+.floor-body{min-width:0}
+.floor-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.floor h3{margin:0;font:700 16.5px/1.2 var(--font-body)}
+.count{font:500 12px/1 var(--font-mono);color:var(--ink-soft);white-space:nowrap;font-variant-numeric:tabular-nums}
+.floor.busy .count{color:var(--accent)}
+.people{list-style:none;margin:7px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:5px}
+.people li{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%;padding:3px 9px 3px 3px;border-radius:999px;background:var(--chip);font-size:13.5px;line-height:1.3}
+.people li.me{background:var(--accent-soft)}
+.people li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.people i{width:10px;height:10px;border-radius:50%;flex:none}
+.people time{font:500 11px/1 var(--font-mono);color:var(--ink-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+.people li.none{background:none;padding:0;color:var(--ink-soft)}
+.people li.none,.people li.none span{white-space:normal}
+.here{min-height:44px;padding:0 14px;border-radius:12px;border:1px solid var(--ink);background:var(--ink);color:var(--bg);font-weight:700;font-size:14.5px;white-space:nowrap}
+.here.leave{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.here:disabled{opacity:.4;cursor:not-allowed}
+.foot{margin:0;font-size:13px;color:var(--ink-soft)}
+
+@media (max-width:520px){
+  .panel{max-height:min(48vh,430px)}
+  .panel-in{gap:10px;padding-block:10px 14px}
+  .tool{padding:0 11px}
+  .tool .tl{display:none}
+  .floor{padding:8px;gap:10px}
+  .sign{width:46px;height:46px}
+  .sign b{font-size:24px}
+  .people{margin-top:4px}
+}
+
+@media (min-width:880px){
+  .app{grid-template-columns:minmax(0,1fr) 384px;grid-template-rows:minmax(0,1fr)}
+  .panel{max-height:none;border-top:0;border-left:1px solid var(--line)}
+  .panel-in{gap:18px;padding-block:22px 24px;padding-left:max(22px,env(safe-area-inset-left,0px));padding-right:max(22px,env(safe-area-inset-right,0px))}
+  .brand h1{font-size:26px}
+}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="app">
+  <section class="stage" id="stage">
+    <canvas id="scena" aria-label="Model 3D budynku LOIII z kibelkami na trzech piętrach"></canvas>
+    <div class="hud">
+      <div class="brand">
+        <h1>Kibelki <em>LOIII</em></h1>
+        <p class="live" id="live" data-mode="connecting"><i aria-hidden="true"></i><span id="liveTxt">Łączenie…</span></p>
+      </div>
+      <div class="tools">
+        <button class="tool" id="btnXray" type="button" aria-pressed="false" aria-label="Przekrój budynku">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.5 17.5 6.5 10 10.5 2.5 6.5Z"/><path d="m2.5 10 7.5 4 7.5-4" opacity=".7"/><path d="m2.5 13.5 7.5 4 7.5-4" opacity=".45"/></svg>
+          <span class="tl">Przekrój</span>
+        </button>
+        <button class="tool" id="btnReset" type="button" aria-label="Pokaż cały budynek">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V3h5M17 8V3h-5M3 12v5h5M17 12v5h-5"/></svg>
+          <span class="tl">Widok</span>
+        </button>
+      </div>
+    </div>
+    <p class="hint" id="hint">Przeciągnij, żeby obrócić · stuknij kibelek, żeby przybliżyć</p>
+    <p class="toast" id="toast" role="status" hidden></p>
+    <div class="fallback" id="fallback" hidden><b>Widok 3D nie ruszył na tym urządzeniu</b><span>Lista kibelków w panelu działa normalnie.</span></div>
+  </section>
+
+  <aside class="panel" aria-label="Obłożenie toalet">
+    <div class="panel-in">
+      <div class="me">
+        <h2 class="lbl">Twoje zaznaczenie</h2>
+        <p class="me-status" id="meStatus">Łączenie z bazą…</p>
+      </div>
+      <div class="floors-wrap">
+        <h2 class="lbl">Kibelki od góry</h2>
+        <ol class="floors" id="floors"></ol>
+      </div>
+      <p class="foot" id="foot">Wpisy nie zawierają imion ani zdjęć i znikają automatycznie po 20 minutach.</p>
+    </div>
+  </aside>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(() => {
+"use strict";
+
+/* ---------- stałe ---------- */
+const FLOORS = [
+  { f: 0, name: "Parter",    loc: "na parterze" },
+  { f: 1, name: "I piętro",  loc: "na I piętrze" },
+  { f: 2, name: "II piętro", loc: "na II piętrze" },
+];
+const TTL_MIN = 20;
+const PAWN_COLORS = ["#d1495b","#2d7dd2","#e9a21f","#3a9b6f","#8b5fc7","#e06c2a","#1ba3a8","#c24585","#6d8a2f","#5b6bd6"];
+const FD = '"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif';
+const FB = '"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif';
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = (s, r = document) => r.querySelector(s);
+function avatarEl(color) {
+  const s = document.createElement("span");
+  s.className = "av";
+  s.style.setProperty("--c", color);
+  s.textContent = "•";
+  return s;
+}
+
+/* ---------- pomocnicze ---------- */
+function hash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+function colorFor(id) { return PAWN_COLORS[hash(String(id)) % PAWN_COLORS.length]; }
+function osob(n) {
+  if (n === 1) return "1 osoba";
+  const d = n % 10, t = n % 100;
+  return n + (d >= 2 && d <= 4 && !(t >= 12 && t <= 14) ? " osoby" : " osób");
+}
+function tokens() {
+  const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim();
+  return { paper: g("--paper"), ink: g("--ink"), inkSoft: g("--ink-soft"), line: g("--line"), accent: g("--accent"),
+           onAccent: g("--on-accent"), sign: g("--sign"), signInk: g("--sign-ink") };
+}
+function isDark() {
+  const t = document.documentElement.getAttribute("data-theme");
+  if (t === "dark") return true;
+  if (t === "light") return false;
+  return matchMedia("(prefers-color-scheme: dark)").matches;
+}
+
+/* ---------- stan aplikacji ---------- */
+const app = {
+  mode: "connecting",       // connecting | live | error
+  docs: new Map(),          // id -> {id, pietro, mine}
+  busy: false,
+};
+
+function currentEntries() {
+  return [...app.docs.values()];
+}
+
+/* ---------- panel ---------- */
+const floorsEl = $("#floors");
+const floorEls = {};
+for (const F of [...FLOORS].reverse()) {
+  const li = document.createElement("li");
+  li.className = "floor";
+  li.dataset.f = F.f;
+  li.innerHTML =
+    `<button class="sign" type="button" data-focus="${F.f}" aria-label="Pokaż kibelek: ${F.name}"><b>${F.f}</b><small>WC</small></button>` +
+    `<div class="floor-body"><div class="floor-head"><h3>${F.name}</h3><span class="count"></span></div><ul class="people"></ul></div>` +
+    `<button class="here" type="button" id="here-${F.f}" data-here="${F.f}">Jestem tu</button>`;
+  floorsEl.append(li);
+  floorEls[F.f] = { li, count: li.querySelector(".count"), people: li.querySelector(".people"), here: li.querySelector(".here") };
+}
+
+function chip(p) {
+  const li = document.createElement("li");
+  if (p.me) li.className = "me";
+  const nm = document.createElement("span"); nm.textContent = p.name + (p.me ? " (ty)" : "");
+  li.append(avatarEl(p.color), nm);
+  return li;
+}
+
+function renderPanel(byFloor, mine) {
+  const total = byFloor.reduce((a, l) => a + l.length, 0);
+  const canMark = app.mode === "live" && !app.busy;
+  for (const F of FLOORS) {
+    const el = floorEls[F.f], list = byFloor[F.f], n = list.length;
+    el.li.classList.toggle("busy", n > 0);
+    el.li.classList.toggle("mine", !!mine && mine.f === F.f);
+    el.count.textContent = app.mode === "live" ? (n ? osob(n) : "pusto") : "—";
+    const emptyText = app.mode === "error" ? "Brak danych" : app.mode === "connecting" ? "Łączenie…" : "Nikogo nie ma";
+    el.people.replaceChildren(...(n ? list.map(chip) : [Object.assign(document.createElement("li"), { className: "none", textContent: emptyText })]));
+    const here = mine && mine.f === F.f;
+    el.here.textContent = here ? "Wychodzę" : "Jestem tu";
+    el.here.classList.toggle("leave", !!here);
+    el.here.disabled = !canMark;
+  }
+  const live = $("#live"), lt = $("#liveTxt");
+  live.dataset.mode = app.mode;
+  const occ = total ? osob(total) + " w kibelkach" : "wszystkie wolne";
+  lt.textContent = {
+    connecting: "Łączenie…",
+    live: "Na żywo · " + occ,
+    error: "Brak połączenia z bazą",
+  }[app.mode];
+  $("#foot").textContent = `Wpisy nie zawierają imion ani zdjęć, znikają po ${TTL_MIN} minutach i odświeżają się co 10 sekund.`;
+
+  const st = $("#meStatus");
+  if (mine) {
+    st.replaceChildren("Zaznaczono: ", Object.assign(document.createElement("b"), { textContent: FLOORS[mine.f].loc }));
+  } else if (app.mode === "error") {
+    st.textContent = "Nie można połączyć się z bazą. Spróbuj ponownie za chwilę.";
+  } else if (app.mode === "connecting") {
+    st.textContent = "Łączę się z bazą…";
+  } else {
+    st.textContent = "Zaznacz piętro, na którym jesteś.";
+  }
+}
+
+function render() {
+  const entries = currentEntries();
+  const byFloor = [[], [], []];
+  entries.forEach(e => byFloor[e.pietro].push({
+    id: e.id, f: e.pietro, me: e.mine, color: colorFor(e.id),
+  }));
+  byFloor.forEach(list => list.forEach((p, index) => { p.name = p.me ? "Ty" : "Osoba " + (index + 1); }));
+  renderPanel(byFloor, entries.find(e => e.mine) ? { f: entries.find(e => e.mine).pietro } : null);
+  if (scene3d) scene3d.setPeople(byFloor);
+}
+
+/* ---------- toast / podpowiedź ---------- */
+let toastT;
+function toast(msg) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.hidden = false;
+  clearTimeout(toastT);
+  toastT = setTimeout(() => { t.hidden = true; }, 2600);
+}
+function hideHint() { $("#hint").classList.add("gone"); }
+
+/* ---------- zapisy ---------- */
+async function apiRequest(method, body) {
+  const response = await fetch("/api/occupants", {
+    method,
+    headers: { Accept: "application/json", ...(body ? { "Content-Type": "application/json" } : {}) },
+    body: body ? JSON.stringify(body) : undefined,
+    cache: "no-store",
+  });
+  let payload = {};
+  if (response.status !== 204) {
+    try { payload = await response.json(); }
+    catch { throw new Error("Serwer zwrócił nieprawidłową odpowiedź."); }
+  }
+  if (!response.ok) throw new Error(typeof payload.error === "string" ? payload.error : "Błąd serwera.");
+  return payload;
+}
+
+let refreshTask = null;
+async function refreshEntries(force = false) {
+  if (refreshTask) {
+    if (!force) return refreshTask;
+    await refreshTask.catch(() => {});
+    return refreshEntries();
+  }
+  const task = (async () => {
+    const payload = await apiRequest("GET");
+    if (!Array.isArray(payload.entries)) throw new Error("Nieprawidłowa odpowiedź serwera.");
+    app.docs.clear();
+    for (const entry of payload.entries) {
+      if (typeof entry.id !== "string" || !Number.isInteger(entry.floor) || entry.floor < 0 || entry.floor > 2 || typeof entry.mine !== "boolean") continue;
+      app.docs.set(entry.id, { id: entry.id, pietro: entry.floor, mine: entry.mine });
+    }
+    app.mode = "live";
+    render();
+  })();
+  refreshTask = task;
+  try { await task; }
+  finally { refreshTask = null; }
+}
+
+function refreshFailed(error) {
+  const wasLive = app.mode === "live";
+  app.docs.clear();
+  app.mode = "error";
+  render();
+  if (wasLive) toast(error.message || "Nie udało się połączyć z bazą.");
+}
+
+async function toggleHere(f) {
+  if (app.mode !== "live" || app.busy) return;
+  app.busy = true;
+  render();
+  if (scene3d) scene3d.focus(f);
+  try {
+    const mine = currentEntries().find(entry => entry.mine);
+    if (mine && mine.pietro === f) {
+      await apiRequest("DELETE");
+      await refreshEntries(true);
+      toast("Zaznaczenie usunięte.");
+    } else {
+      await apiRequest("POST", { floor: f });
+      await refreshEntries(true);
+      toast("Zaznaczono: " + FLOORS[f].name);
+    }
+  } catch (error) {
+    refreshFailed(error);
+    toast(error.message || "Nie udało się zapisać. Spróbuj ponownie.");
+  } finally {
+    app.busy = false;
+    render();
+  }
+}
+
+floorsEl.addEventListener("click", e => {
+  const here = e.target.closest("[data-here]");
+  if (here) { toggleHere(Number(here.dataset.here)); return; }
+  const sign = e.target.closest("[data-focus]");
+  if (sign) { focusFloor(Number(sign.dataset.focus), false); return; }
+});
+
+function focusFloor(f, flash = true) {
+  if (scene3d) scene3d.focus(f);
+  const li = floorEls[f].li;
+  if (flash) {
+    li.classList.remove("flash"); void li.offsetWidth; li.classList.add("flash");
+    li.scrollIntoView({ block: "nearest", behavior: reduceMotion ? "auto" : "smooth" });
+  }
+}
+
+/* ---------- połączenie z bazą ---------- */
+async function init() {
+  try { await refreshEntries(); }
+  catch (error) {
+    refreshFailed(error);
+    toast(error.message || "Nie udało się połączyć z bazą.");
+  }
+}
+
+setInterval(() => {
+  if (!document.hidden) refreshEntries().catch(refreshFailed);
+}, 10000);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) refreshEntries().catch(refreshFailed);
+});
+
+/* =========================================================
+   SCENA 3D
+   ========================================================= */
+function createScene(canvas, stage, hooks) {
+  const T = THREE;
+  const renderer = new T.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  const aniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+  const scene = new T.Scene();
+  const FOV = 38, TANF = Math.tan((FOV / 2) * Math.PI / 180);
+  const camera = new T.PerspectiveCamera(FOV, 1, 0.5, 400);
+  const controls = new T.OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.09;
+  controls.rotateSpeed = 0.7;
+  controls.minDistance = 7;
+  controls.maxDistance = 85;
+  controls.minPolarAngle = 0.2;
+  controls.maxPolarAngle = Math.PI * 0.49;
+
+  /* deterministyczny los do tekstur */
+  let seed = 1337;
+  const rnd = () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  function rr(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+  function tex(w, h, draw, rx = 1, ry = 1) {
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    draw(c.getContext("2d"), w, h);
+    const t = new T.CanvasTexture(c);
+    t.wrapS = t.wrapT = T.RepeatWrapping; t.anisotropy = aniso; t.repeat.set(rx, ry);
+    return t;
+  }
+
+  /* tekstury z materiałów budynku ze zdjęcia */
+  const brickTex = tex(512, 256, (g, w, h) => {
+    g.fillStyle = "#d6cfc0"; g.fillRect(0, 0, w, h);
+    for (let r = 0; r < 8; r++) {
+      const off = (r % 2) * 32;
+      for (let c = -1; c < 9; c++) {
+        g.fillStyle = `hsl(${38 + rnd() * 8},${20 + rnd() * 12}%,${83 + rnd() * 7}%)`;
+        g.fillRect(c * 64 + off + 3, r * 32 + 3, 58, 26);
+      }
+    }
+  }, 24 / 3.4, 3.3 / 1.2);
+  const cobbleTex = tex(512, 512, (g, w, h) => {
+    g.fillStyle = "#6b6762"; g.fillRect(0, 0, w, h);
+    const n = 16, s = w / n;
+    for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
+      const sw = s * (0.74 + rnd() * 0.16), sh = s * (0.74 + rnd() * 0.16);
+      const x = c * s + (s - sw) / 2 + (rnd() - 0.5) * s * 0.14 + (r % 2 ? s / 2 : 0);
+      const y = r * s + (s - sh) / 2 + (rnd() - 0.5) * s * 0.14;
+      const k = rnd();
+      const col = k < 0.1 ? `hsl(${18 + rnd() * 14},${14 + rnd() * 10}%,${52 + rnd() * 10}%)`
+                          : `hsl(${28 + rnd() * 24},${3 + rnd() * 6}%,${54 + rnd() * 16}%)`;
+      for (const dx of [0, -w]) {
+        g.fillStyle = col; rr(g, x + dx, y, sw, sh, s * 0.24); g.fill();
+        g.fillStyle = "rgba(255,255,255,.07)"; rr(g, x + dx + sw * 0.12, y + sh * 0.1, sw * 0.55, sh * 0.32, s * 0.14); g.fill();
+      }
+    }
+  }, 140 / 3.6, 100 / 3.6);
+  const paverTex = tex(512, 256, (g, w, h) => {
+    g.fillStyle = "#86827c"; g.fillRect(0, 0, w, h);
+    const s = w / 8, t = h / 4;
+    for (let r = 0; r < 4; r++) for (let c = 0; c < 8; c++) {
+      const x = c * s + (r % 2 ? s / 2 : 0), y = r * t;
+      const col = `hsl(${30 + rnd() * 20},${3 + rnd() * 5}%,${63 + rnd() * 13}%)`;
+      for (const dx of [0, -w]) { g.fillStyle = col; rr(g, x + dx + 3, y + 3, s - 6, t - 6, 9); g.fill(); }
+    }
+  }, 64 / 2.2, 2.4 / 1.1);
+  const floorTileTex = tex(256, 256, (g, w) => {
+    g.fillStyle = "#b3bcb8"; g.fillRect(0, 0, w, w);
+    const s = w / 8;
+    for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) { g.fillStyle = (r + c) % 2 ? "#e3e8e5" : "#cdd5d1"; g.fillRect(c * s + 1.5, r * s + 1.5, s - 3, s - 3); }
+  }, 3, 2.6);
+  const wallTileDraw = (g, w) => {
+    g.fillStyle = "#c4cdca"; g.fillRect(0, 0, w, w);
+    const s = w / 8;
+    for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) { g.fillStyle = `hsl(165,${10 + rnd() * 6}%,${90 + rnd() * 4}%)`; g.fillRect(c * s + 1.5, r * s + 1.5, s - 3, s - 3); }
+  };
+  const wallTileTex = tex(256, 256, wallTileDraw, 3, 1.8);
+  const sideTileTex = tex(256, 256, wallTileDraw, 2.6, 0.75);
+  const wcCanvas = document.createElement("canvas"); wcCanvas.width = 128; wcCanvas.height = 64;
+  const wcTex = new T.CanvasTexture(wcCanvas);
+  function drawWc() {
+    const g = wcCanvas.getContext("2d");
+    g.fillStyle = "#3b3d42"; g.fillRect(0, 0, 128, 64);
+    g.fillStyle = "#f5f3ee"; g.font = `800 40px ${FD}`; g.textAlign = "center"; g.textBaseline = "middle";
+    g.fillText("WC", 64, 35);
+    wcTex.needsUpdate = true;
+  }
+  drawWc();
+  function slatTex() {
+    return tex(8, 32, (g, w, h) => {
+      g.fillStyle = "#f2f1ed"; g.fillRect(0, 0, w, h);
+      g.fillStyle = "#ffffff"; g.fillRect(0, 3, w, 7);
+      g.fillStyle = "#d3d2cc"; g.fillRect(0, h - 4, w, 2);
+    });
+  }
+  const shadowTex = (() => {
+    const c = document.createElement("canvas"); c.width = c.height = 128;
+    const g = c.getContext("2d"), gr = g.createRadialGradient(64, 64, 6, 64, 64, 64);
+    gr.addColorStop(0, "rgba(0,0,0,.36)"); gr.addColorStop(0.62, "rgba(0,0,0,.17)"); gr.addColorStop(1, "rgba(0,0,0,0)");
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128);
+    return new T.CanvasTexture(c);
+  })();
+  function skyTex(top, hor) {
+    const c = document.createElement("canvas"); c.width = 2; c.height = 256;
+    const g = c.getContext("2d"), gr = g.createLinearGradient(0, 0, 0, 256);
+    gr.addColorStop(0, top); gr.addColorStop(0.72, hor); gr.addColorStop(1, hor);
+    g.fillStyle = gr; g.fillRect(0, 0, 2, 256);
+    return new T.CanvasTexture(c);
+  }
+
+  /* światła */
+  const hemi = new T.HemisphereLight(0xffffff, 0x8f8a80, 0.82);
+  const sun = new T.DirectionalLight(0xffffff, 0.5); sun.position.set(-18, 30, 24);
+  const fill = new T.DirectionalLight(0xffffff, 0.16); fill.position.set(22, 8, -12);
+  scene.add(hemi, sun, fill);
+
+  /* materiały: ghost = staje się przezroczysty w przekroju */
+  const ghostMats = [];
+  const L = (c, o = {}) => new T.MeshLambertMaterial(Object.assign({ color: c }, o));
+  const G = (c, o) => { const m = L(c, o); ghostMats.push(m); return m; };
+  const M = {
+    wall: G("#d9d5cc"), brick: G("#ffffff", { map: brickTex }), upper: G("#dcd8cf"), parapet: G("#e8e5de"),
+    band: G("#737477"), crimson: G("#b2344f"), ledge: G("#8d9093"), recess: G("#2b3137"), frame: G("#f3f2ee"),
+    sill: G("#9a9da0"), cassette: G("#f1f0ec"), bars: G("#3f4246"), pier: G("#c7c6c2"), pipe: G("#8b9095"),
+    roof: G("#76797d"), dark: G("#2e3134"), ac: G("#efefec"), fan: G("#575b60"), vent: G("#34373a"),
+  };
+  const N = {
+    annex: L("#e9e8e4"), annexBase: L("#9da0a4"), annexTrim: L("#7b7e82"), bg: L("#c4c6ca"), bgBand: L("#9a9da2"),
+    slab: L("#bab6ad"), tileFloor: L("#ffffff", { map: floorTileTex }), tileWall: L("#ffffff", { map: wallTileTex }),
+    tileSide: L("#ffffff", { map: sideTileTex }), stall: L("#7fa7b4"), stallDoor: L("#8fb4c0"), lock: L("#c94b4b"),
+    porcelain: L("#f7f7f5"), mirror: L("#9fb3c2", { emissive: "#223040", emissiveIntensity: 0.4 }),
+    street: L("#ffffff", { map: cobbleTex }), walk: L("#ffffff", { map: paverTex }), curb: L("#a9a7a2"),
+    sign: L("#ffffff", { map: wcTex }), yellow: L("#e9c84a"), glassDark: L("#3d454e"),
+  };
+
+  const bld = new T.Group(); scene.add(bld);
+  const interior = new T.Group(); scene.add(interior);
+  const world = new T.Group(); scene.add(world);
+  function box(w, h, d, mat, x, y, z, parent = bld) { const m = new T.Mesh(new T.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); parent.add(m); return m; }
+  function plane(w, h, mat, x, y, z, parent = bld) { const m = new T.Mesh(new T.PlaneGeometry(w, h), mat); m.position.set(x, y, z); parent.add(m); return m; }
+
+  /* --- bryła główna wg zdjęcia --- */
+  box(24, 10.3, 12, M.wall, 0, 5.15, 0);
+  plane(24, 3.3, M.brick, 0, 1.65, 6.01);
+  plane(24, 6.3, M.upper, 0, 6.45, 6.01);
+  plane(24, 0.7, M.parapet, 0, 9.95, 6.012);
+  box(24.4, 0.16, 0.4, M.ledge, 0, 3.3, 6.12);
+  plane(24, 0.86, M.band, 0, 3.82, 6.02);
+  plane(24, 1.25, M.band, 0, 6.925, 6.02);
+  plane(1.6, 6.3, M.crimson, 4.5, 6.45, 6.03);
+  plane(1.0, 6.3, M.crimson, 11.5, 6.45, 6.03);
+  box(24, 0.14, 0.18, M.pipe, 0, 10.32, 6.1);
+  box(24, 0.08, 12, M.roof, 0, 10.34, 0);
+  // filar po lewej + rynna
+  box(1.3, 11.1, 12.7, M.pier, -12.65, 5.55, 0.35);
+  box(1.42, 0.12, 12.8, M.ledge, -12.65, 11.16, 0.35);
+  const pipe = new T.Mesh(new T.CylinderGeometry(0.075, 0.075, 10.2, 12), M.pipe); pipe.position.set(-11.78, 5.15, 6.26); bld.add(pipe);
+  box(0.2, 0.3, 0.2, M.pipe, -11.78, 0.2, 6.3);
+  // rura na dachu po prawej
+  const roofPipe = new T.Mesh(new T.CylinderGeometry(0.06, 0.06, 1.1, 10), M.dark); roofPipe.position.set(11.6, 10.9, 5.6); bld.add(roofPipe);
+  // halogen i klimatyzator
+  box(0.36, 0.26, 0.14, M.dark, -3.45, 5.5, 6.09);
+  box(1.15, 0.78, 0.36, M.ac, 10.75, 4.95, 6.22);
+  const fan = new T.Mesh(new T.CircleGeometry(0.27, 28), M.fan); fan.position.set(10.55, 4.95, 6.405); bld.add(fan);
+  box(0.06, 0.06, 0.5, M.pipe, 10.4, 4.52, 6.1); box(0.06, 0.06, 0.5, M.pipe, 11.1, 4.52, 6.1);
+  // okienka piwniczne
+  for (const vx of [-6.5, 1.2, 8.4]) { box(1.05, 0.45, 0.04, M.frame, vx, 0.34, 6.02); box(0.9, 0.32, 0.05, M.vent, vx, 0.34, 6.03); }
+
+  /* --- okna --- */
+  const SILL = [1.15, 4.25, 7.55], WH = 1.7;
+  const COL = { A: { x: -7, w: 3.3 }, B: { x: 0, w: 3.3 }, C: { x: 7.6, w: 3.6 } };
+  const classroomGlass = [];
+  const toilets = [0, 1, 2].map(f => ({
+    f, count: 0, mine: false, shutters: [], glass: null, lamp: null, light: null, badge: null, badgeCanvas: null,
+    closed: [1, 1, 0.52][f], open: 0.24, cur: [1, 1, 0.52][f], target: [1, 1, 0.52][f], glow: 0, glowTarget: 0,
+    center: new T.Vector3(-7, (f ? f * 3.3 : 0) + 1.5, 4),
+  }));
+  function addShutter(x, top, w, h, frac) {
+    const m = G("#ffffff", { map: slatTex() });
+    const geo = new T.PlaneGeometry(1, 1); geo.translate(0, -0.5, 0);
+    const mesh = new T.Mesh(geo, m); mesh.position.set(x, top, 6.13); bld.add(mesh);
+    const s = { mesh, mat: m, w, h };
+    setShutter(s, frac);
+    return s;
+  }
+  function setShutter(s, frac) {
+    const hh = Math.max(0.002, s.h * frac);
+    s.mesh.scale.set(s.w, hh, 1);
+    s.mat.map.repeat.set(1, hh / 0.1);
+  }
+  function addWindow(spec) {
+    const { x, w } = COL[spec.c], sill = SILL[spec.f], top = sill + WH, cy = sill + WH / 2;
+    plane(w, WH, M.recess, x, cy, 6.03);
+    let gm;
+    if (spec.toilet) { gm = G("#cfd6da", { emissive: "#000000" }); toilets[spec.f].glass = gm; }
+    else { gm = G("#56626d", { emissive: "#000000" }); classroomGlass.push({ mat: gm, lit: !!spec.lit, night: !!spec.night }); }
+    const glass = plane(w - 0.12, WH - 0.12, gm, x, cy, 6.045);
+    if (spec.toilet) { glass.userData.f = spec.f; pickables.push(glass); }
+    const ft = 0.07, fd = 0.08, fz = 6.07;
+    box(w, ft, fd, M.frame, x, top - ft / 2, fz); box(w, ft, fd, M.frame, x, sill + ft / 2, fz);
+    box(ft, WH, fd, M.frame, x - w / 2 + ft / 2, cy, fz); box(ft, WH, fd, M.frame, x + w / 2 - ft / 2, cy, fz);
+    box(ft, WH, fd, M.frame, x, cy, fz);
+    box(w, ft * 0.8, fd, M.frame, x, sill + 0.42, fz);
+    box(w + 0.2, 0.06, 0.24, M.sill, x, sill - 0.03, 6.12);
+    box(w + 0.12, 0.33, 0.3, M.cassette, x, top + 0.165, 6.15);
+    if (spec.bars) {
+      for (let bx = x - w / 2 + 0.2; bx < x + w / 2 - 0.1; bx += 0.2) box(0.03, WH - 0.1, 0.03, M.bars, bx, cy, 6.1);
+      box(w - 0.1, 0.04, 0.03, M.bars, x, sill + 0.3, 6.1); box(w - 0.1, 0.04, 0.03, M.bars, x, top - 0.3, 6.1);
+    }
+    const out = [];
+    if (spec.split) { const sw = w / 2 - 0.02; out.push(addShutter(x - w / 4, top, sw, WH, spec.sh), addShutter(x + w / 4, top, sw, WH, spec.sh)); }
+    else out.push(addShutter(x, top, w, WH, spec.sh));
+    if (spec.toilet) toilets[spec.f].shutters = out;
+  }
+  const pickables = [];
+  [
+    { c: "A", f: 0, sh: 1.0, toilet: true },
+    { c: "B", f: 0, sh: 0.0, bars: true, lit: true },
+    { c: "C", f: 0, sh: 0.62, bars: true },
+    { c: "A", f: 1, sh: 1.0, toilet: true, split: true },
+    { c: "B", f: 1, sh: 0.42, night: true },
+    { c: "C", f: 1, sh: 0.82, split: true },
+    { c: "A", f: 2, sh: 0.52, toilet: true },
+    { c: "B", f: 2, sh: 0.33 },
+    { c: "C", f: 2, sh: 0.42, night: true },
+  ].forEach(addWindow);
+
+  /* --- przybudówka i budynek w tle --- */
+  box(8.4, 4.0, 9, N.annex, -17.5, 2.0, 1.5, world);
+  plane(8.4, 0.95, N.annexBase, -17.5, 0.475, 6.01, world);
+  box(8.6, 0.25, 9.2, N.annexTrim, -17.5, 4.1, 1.5, world);
+  plane(4.3, 2.3, N.glassDark, -18, 2.45, 6.01, world);
+  for (const fx of [-20.15, -18.72, -17.28, -15.85]) box(0.08, 2.3, 0.06, M.frame, fx, 2.45, 6.04, world);
+  for (const fy of [1.3, 2.45, 3.6]) box(4.3, 0.08, 0.06, M.frame, -18, fy, 6.04, world);
+  box(0.24, 0.18, 0.03, N.yellow, -14.4, 1.75, 6.02, world);
+  box(9, 8.6, 6, N.bg, -18, 4.3, -5, world);
+  plane(9, 0.9, N.bgBand, -18, 5.9, -1.99, world);
+  plane(9, 0.5, N.bgBand, -18, 7.6, -1.99, world);
+  for (const cx of [-20.5, -19.6, -16.2]) box(0.45, 0.8, 0.45, N.bg, cx, 9.0, -5.5, world);
+
+  /* --- ulica z kocich łbów, chodnik, krawężnik --- */
+  const street = plane(140, 100, N.street, 0, 0, 20, world); street.rotation.x = -Math.PI / 2;
+  const walk = plane(64, 2.4, N.walk, -2, 0.03, 7.2, world); walk.rotation.x = -Math.PI / 2;
+  box(64, 0.14, 0.24, N.curb, -2, 0.07, 8.46, world);
+  const shade = plane(40, 22, new T.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false }), -4.5, 0.045, 0.5, world);
+  shade.rotation.x = -Math.PI / 2; shade.renderOrder = 1;
+
+  /* --- wnętrze: stropy i kibelki --- */
+  box(23.7, 0.1, 11.7, N.slab, 0, 0.05, 0, interior);
+  for (const f of [1, 2]) box(23.7, 0.18, 11.7, N.slab, 0, f * 3.3, 0, interior);
+  const floorBase = f => (f === 0 ? 0.1 : f * 3.3 + 0.09);
+  toilets.forEach(t => {
+    const yb = floorBase(t.f);
+    const room = new T.Group(); room.userData.f = t.f; interior.add(room); pickables.push(room);
+    box(4.9, 0.04, 4.2, N.tileFloor, -7, yb + 0.02, 3.8, room);
+    box(4.9, 2.95, 0.08, N.tileWall, -7, yb + 1.5, 1.66, room);
+    box(0.08, 1.15, 4.2, N.tileSide, -9.47, yb + 0.6, 3.8, room);
+    box(0.08, 1.15, 4.2, N.tileSide, -4.53, yb + 0.6, 3.8, room);
+    // dwie kabiny, obok dwie umywalki
+    for (const xp of [-7.98, -6.53]) box(0.05, 1.95, 1.32, N.stall, xp, yb + 1.1, 2.36, room);
+    for (const xc of [-8.705, -7.255]) { box(1.37, 1.8, 0.05, N.stallDoor, xc, yb + 1.1, 3.02, room); box(0.08, 0.08, 0.03, N.lock, xc + 0.5, yb + 1.15, 3.06, room); }
+    for (const sx of [-5.95, -5.1]) { box(0.55, 0.14, 0.42, N.porcelain, sx, yb + 0.85, 1.92, room); plane(0.6, 0.75, N.mirror, sx, yb + 1.62, 1.705, room); }
+    plane(0.56, 0.28, N.sign, -7.98, yb + 2.45, 1.705, room);
+    t.lamp = L("#f4f2ea", { emissive: "#ffe0a0", emissiveIntensity: 0 });
+    box(1.4, 0.06, 0.3, t.lamp, -7, yb + 2.98, 4.3, room);
+    t.light = new T.PointLight(0xffd89a, 0, 7.5, 1.6); t.light.position.set(-7, yb + 2.5, 4.4); room.add(t.light);
+    t.yb = yb;
+    // plakietka z liczbą osób przy oknie (stały rozmiar na ekranie)
+    const c = document.createElement("canvas"); c.width = 300; c.height = 96;
+    const st = new T.CanvasTexture(c); st.generateMipmaps = false; st.minFilter = T.LinearFilter;
+    const sp = new T.Sprite(new T.SpriteMaterial({ map: st, depthTest: false, depthWrite: false, transparent: true, sizeAttenuation: false }));
+    sp.position.set(-10.33, SILL[t.f] + 0.85, 6.4); sp.renderOrder = 30; sp.userData.f = t.f;
+    scene.add(sp); pickables.push(sp);
+    t.badge = sp; t.badgeCanvas = c;
+  });
+
+  /* kontur budynku w przekroju */
+  const edges = new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(24, 10.3, 12)), new T.LineBasicMaterial({ color: 0x24262a, transparent: true, opacity: 0, depthWrite: false }));
+  edges.position.set(0, 5.15, 0); edges.visible = false; scene.add(edges);
+
+  /* --- pionki i podpisy --- */
+  const pawnGeo = {
+    base: new T.CylinderGeometry(0.33, 0.36, 0.1, 24),
+    body: new T.CylinderGeometry(0.13, 0.3, 0.86, 24),
+    head: new T.SphereGeometry(0.22, 24, 16),
+    ring: new T.TorusGeometry(0.47, 0.045, 8, 40),
+  };
+  const pawnMats = new Map();
+  const ringMat = L("#b0304c", { emissive: "#b0304c", emissiveIntensity: 0.35 });
+  function pawnMat(color) {
+    if (!pawnMats.has(color)) pawnMats.set(color, L(color, { emissive: color, emissiveIntensity: 0.14 }));
+    return pawnMats.get(color);
+  }
+  const pawns = new Map();
+  const dying = [];
+  const SLOT_X = [0, -0.88, 0.88, -1.76, 1.76];
+  function slotPos(f, i) {
+    const row = i < 5 ? 0 : 1, col = i % 5;
+    return new T.Vector3(-7 + SLOT_X[col] + (row ? 0.44 : 0), floorBase(f) + 0.04, row ? 4.05 : 5.15);
+  }
+  function fit(g, s, max) {
+    if (g.measureText(s).width <= max) return s;
+    while (s.length > 1 && g.measureText(s + "…").width > max) s = s.slice(0, -1);
+    return s + "…";
+  }
+  function drawTag(P) {
+    const c = P.tagCanvas, g = c.getContext("2d"), w = c.width, k = tokens(), ph = 62;
+    g.clearRect(0, 0, w, c.height);
+    rr(g, 3, 3, w - 6, ph, ph / 2 - 2); g.fillStyle = k.paper; g.fill();
+    g.lineWidth = P.me ? 5 : 2.5; g.strokeStyle = P.me ? k.accent : k.line; g.stroke();
+    g.beginPath(); g.moveTo(w / 2 - 10, ph + 1); g.lineTo(w / 2, ph + 16); g.lineTo(w / 2 + 10, ph + 1); g.closePath();
+    g.fillStyle = P.me ? k.accent : k.paper; g.fill();
+    const cx = 34, cy = 3 + ph / 2;
+    g.beginPath(); g.arc(cx, cy, 12, 0, Math.PI * 2); g.fillStyle = P.color; g.fill();
+    g.fillStyle = k.ink; g.font = `700 32px ${FB}`; g.textBaseline = "middle"; g.textAlign = "left";
+    g.fillText(fit(g, P.name + (P.me ? " (ty)" : ""), w - 84), 64, cy + 1);
+    P.tag.material.map.needsUpdate = true;
+  }
+  function createPawn(p, f) {
+    const g = new T.Group(); g.userData.f = f;
+    const m = pawnMat(p.color);
+    const base = new T.Mesh(pawnGeo.base, m); base.position.y = 0.05;
+    const body = new T.Mesh(pawnGeo.body, m); body.position.y = 0.53;
+    const head = new T.Mesh(pawnGeo.head, m); head.position.y = 1.12;
+    g.add(base, body, head);
+    if (p.me) { const r = new T.Mesh(pawnGeo.ring, ringMat); r.rotation.x = Math.PI / 2; r.position.y = 0.03; g.add(r); }
+    const tc = document.createElement("canvas"); tc.width = 320; tc.height = 84;
+    const tt = new T.CanvasTexture(tc); tt.generateMipmaps = false; tt.minFilter = T.LinearFilter;
+    const tag = new T.Sprite(new T.SpriteMaterial({ map: tt, depthTest: false, depthWrite: false, transparent: true, opacity: 0 }));
+    tag.center.set(0.5, 0); tag.scale.set(1.5, 1.5 * 84 / 320, 1); tag.position.y = 1.42; tag.renderOrder = 20;
+    g.add(tag);
+    interior.add(g); pickables.push(g);
+    const P = { id: p.id, f, me: p.me, color: p.color, name: p.name, group: g, head, tag, tagCanvas: tc,
+                target: new T.Vector3(), born: performance.now(), fresh: true };
+    drawTag(P);
+    return P;
+  }
+  function killPawn(P) {
+    P.dyingAt = performance.now();
+    const i = pickables.indexOf(P.group); if (i >= 0) pickables.splice(i, 1);
+    dying.push(P);
+  }
+  function disposePawn(P) {
+    interior.remove(P.group);
+    P.tag.material.map.dispose(); P.tag.material.dispose();
+  }
+
+  /* --- plakietki przy oknach --- */
+  let stageH = 400;
+  function drawBadge(t) {
+    const c = t.badgeCanvas, g = c.getContext("2d"), w = c.width, h = c.height, k = tokens(), busy = t.count > 0;
+    g.clearRect(0, 0, w, h);
+    rr(g, 3, 3, w - 6, h - 6, 24); g.fillStyle = k.paper; g.fill();
+    g.lineWidth = t.mine ? 6 : 2.5; g.strokeStyle = t.mine ? k.accent : k.line; g.stroke();
+    const tile = h - 22;
+    rr(g, 11, 11, tile, tile, 14); g.fillStyle = busy ? k.accent : k.sign; g.fill();
+    g.fillStyle = busy ? k.onAccent : k.signInk; g.font = `800 46px ${FD}`; g.textAlign = "center"; g.textBaseline = "middle";
+    g.fillText(String(t.f), 11 + tile / 2, h / 2 + 2);
+    g.textAlign = "left"; g.fillStyle = busy ? k.ink : k.inkSoft; g.font = `700 34px ${FB}`;
+    g.fillText(busy ? t.count + " os." : "wolne", tile + 26, h / 2 + 1);
+    t.badge.material.map.needsUpdate = true;
+  }
+  function sizeBadges() {
+    const sy = 2 * TANF * 30 / Math.max(1, stageH);
+    toilets.forEach(t => t.badge.scale.set(sy * 300 / 96, sy, 1));
+  }
+
+  function setPeople(byFloor) {
+    const seen = new Set();
+    byFloor.forEach((list, f) => {
+      list.forEach((p, i) => {
+        if (i >= 10) return;
+        seen.add(p.id);
+        let P = pawns.get(p.id);
+        if (P && (P.f !== f || P.me !== p.me || P.color !== p.color)) { killPawn(P); pawns.delete(p.id); P = null; }
+        if (!P) { P = createPawn(p, f); pawns.set(p.id, P); }
+        if (P.name !== p.name) {
+          P.name = p.name;
+          drawTag(P);
+        }
+        P.target.copy(slotPos(f, i));
+        P.tag.position.y = i < 5 ? 1.42 : 1.9;
+        if (P.fresh) { P.group.position.copy(P.target); P.fresh = false; }
+      });
+      const t = toilets[f], n = list.length, mine = list.some(p => p.me);
+      if (t.count !== n || t.mine !== mine) { t.count = n; t.mine = mine; drawBadge(t); }
+      t.target = n ? t.open : t.closed;
+      t.glowTarget = n ? 1 : 0;
+    });
+    for (const [id, P] of pawns) if (!seen.has(id)) { killPawn(P); pawns.delete(id); }
+  }
+
+  /* --- motyw (jasny dzień pochmurny / wieczór) --- */
+  const C = (h) => new T.Color(h);
+  const glassCols = {};
+  function applyTheme() {
+    const dark = isDark(), k = tokens();
+    const top = dark ? "#2b3446" : "#c9d6e3", hor = dark ? "#4a5466" : "#f3f5f7";
+    if (scene.background && scene.background.dispose) scene.background.dispose();
+    scene.background = skyTex(top, hor);
+    scene.fog = new T.Fog(hor, 55, 135);
+    hemi.color.set(dark ? "#9aa8c6" : "#ffffff"); hemi.groundColor.set(dark ? "#4a4740" : "#a39e94"); hemi.intensity = dark ? 0.68 : 0.9;
+    sun.color.set(dark ? "#c3cde4" : "#fffaf0"); sun.intensity = dark ? 0.36 : 0.5;
+    fill.intensity = dark ? 0.16 : 0.22;
+    classroomGlass.forEach(g => {
+      const on = g.lit || (dark && g.night);
+      g.mat.color.set(on ? (dark ? "#f0d89a" : "#d9cfa2") : (dark ? "#1f262f" : "#56626d"));
+      g.mat.emissive.set(on ? "#ffcf73" : "#000000");
+      g.mat.emissiveIntensity = on ? (dark ? 0.75 : 0.25) : 0;
+    });
+    glassCols.empty = C(dark ? "#2b323b" : "#cfd6da");
+    glassCols.lit = C(dark ? "#ffe2a0" : "#f6dc95");
+    glassCols.emis = dark ? 0.95 : 0.4;
+    ringMat.color.set(k.accent); ringMat.emissive.set(k.accent);
+    edges.material.color.set(k.ink);
+    toilets.forEach(drawBadge);
+    pawns.forEach(drawTag);
+    drawWc();
+  }
+
+  /* --- przekrój --- */
+  let ghost = 1, ghostTarget = 1, ghostTransp = false;
+  const GHOST_MIN = 0.13;
+  function applyGhost() {
+    const tr = ghost < 0.995;
+    if (tr !== ghostTransp) {
+      ghostTransp = tr;
+      ghostMats.forEach(m => { m.transparent = tr; m.depthWrite = !tr; m.needsUpdate = true; });
+    }
+    ghostMats.forEach(m => { m.opacity = tr ? ghost : 1; });
+    edges.visible = ghost < 0.99;
+    edges.material.opacity = (1 - ghost) * 0.6;
+  }
+  function setXray(on) {
+    ghostTarget = on ? GHOST_MIN : 1;
+    if (reduceMotion) { ghost = ghostTarget; applyGhost(); }
+    hooks.onXray && hooks.onXray(on);
+  }
+
+  /* --- kamera --- */
+  let userMoved = false, tween = null;
+  function defaultPose() {
+    const tgt = new T.Vector3(-4.2, 4.6, 1.5);
+    const dir = new T.Vector3(-0.36, 0.31, 1).normalize();
+    const dW = (33 / 2) / (TANF * camera.aspect), dH = (15 / 2) / TANF;
+    const d = Math.min(78, Math.max(26, Math.max(dW, dH) * 0.96));
+    return { pos: tgt.clone().addScaledVector(dir, d), tgt };
+  }
+  function focusPose(f) {
+    const tgt = new T.Vector3(-7, floorBase(f) + 1.35, 4.1);
+    const dir = new T.Vector3(0.2, 0.3, 1).normalize();
+    const dW = (9.5 / 2) / (TANF * camera.aspect), dH = (6.4 / 2) / TANF;
+    const d = Math.min(30, Math.max(11, Math.max(dW, dH)));
+    return { pos: tgt.clone().addScaledVector(dir, d), tgt };
+  }
+  function flyTo(p) {
+    if (reduceMotion) { camera.position.copy(p.pos); controls.target.copy(p.tgt); tween = null; return; }
+    tween = { t0: performance.now(), ms: 950, p0: camera.position.clone(), p1: p.pos, q0: controls.target.clone(), q1: p.tgt };
+  }
+  controls.addEventListener("start", () => { userMoved = true; tween = null; hooks.onInteract && hooks.onInteract(); });
+
+  function resize() {
+    const w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h; camera.updateProjectionMatrix();
+    stageH = h; sizeBadges();
+    if (!userMoved && !tween) { const p = defaultPose(); camera.position.copy(p.pos); controls.target.copy(p.tgt); }
+  }
+  new ResizeObserver(resize).observe(stage);
+  resize();
+
+  /* --- stuknięcie w kibelek --- */
+  const ray = new T.Raycaster(), ndc = new T.Vector2();
+  let down = null;
+  canvas.addEventListener("pointerdown", e => { down = { x: e.clientX, y: e.clientY, t: performance.now() }; });
+  canvas.addEventListener("pointerup", e => {
+    if (!down) return;
+    const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y), dt = performance.now() - down.t;
+    down = null;
+    if (moved > 7 || dt > 600) return;
+    const r = canvas.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    for (const hit of ray.intersectObjects(pickables, true)) {
+      let o = hit.object;
+      while (o && o.userData.f === undefined) o = o.parent;
+      if (o) { hooks.onPick && hooks.onPick(o.userData.f); hooks.onInteract && hooks.onInteract(); return; }
+    }
+  });
+  canvas.addEventListener("webglcontextlost", e => { e.preventDefault(); hooks.onLost && hooks.onLost(); });
+
+  /* --- pętla --- */
+  const ease = k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+  const easeBack = k => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(k - 1, 3) + c1 * Math.pow(k - 1, 2); };
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  let last = performance.now();
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (tween) {
+      const k = clamp((now - tween.t0) / tween.ms, 0, 1), e = ease(k);
+      camera.position.lerpVectors(tween.p0, tween.p1, e);
+      controls.target.lerpVectors(tween.q0, tween.q1, e);
+      if (k >= 1) tween = null;
+    }
+    controls.update();
+    const tg = controls.target;
+    tg.set(clamp(tg.x, -24, 18), clamp(tg.y, 0, 12), clamp(tg.z, -12, 16));
+
+    if (ghost !== ghostTarget) {
+      ghost += (ghostTarget - ghost) * Math.min(1, dt * 7);
+      if (Math.abs(ghost - ghostTarget) < 0.004) ghost = ghostTarget;
+      applyGhost();
+    }
+    const dark = isDarkCached;
+    toilets.forEach(t => {
+      if (Math.abs(t.cur - t.target) > 0.001) { t.cur += (t.target - t.cur) * (reduceMotion ? 1 : Math.min(1, dt * 3.2)); t.shutters.forEach(s => setShutter(s, t.cur)); }
+      t.glow += (t.glowTarget - t.glow) * (reduceMotion ? 1 : Math.min(1, dt * 4));
+      if (t.glass && glassCols.empty) {
+        t.glass.color.copy(glassCols.empty).lerp(glassCols.lit, t.glow);
+        t.glass.emissive.set("#ffb94d"); t.glass.emissiveIntensity = t.glow * glassCols.emis * (0.8 + Math.min(t.count, 5) * 0.05);
+      }
+      t.lamp.emissiveIntensity = t.glow * 1.1;
+      t.light.intensity = t.glow * (dark ? 1.5 : 1.0);
+      const dist = camera.position.distanceTo(t.center);
+      t.tagAlpha = clamp((33 - dist) / 9, 0, 1);
+    });
+    pawns.forEach(P => {
+      P.group.position.lerp(P.target, Math.min(1, dt * 6));
+      const a = reduceMotion ? 1 : clamp((now - P.born) / 480, 0, 1);
+      P.group.scale.setScalar(Math.max(0.001, easeBack(a)));
+      P.tag.material.opacity = toilets[P.f].tagAlpha * a;
+    });
+    for (let i = dying.length - 1; i >= 0; i--) {
+      const P = dying[i], a = reduceMotion ? 1 : clamp((now - P.dyingAt) / 260, 0, 1);
+      P.group.scale.setScalar(Math.max(0.001, 1 - a));
+      P.tag.material.opacity = (1 - a) * toilets[P.f].tagAlpha;
+      if (a >= 1) { disposePawn(P); dying.splice(i, 1); }
+    }
+    renderer.render(scene, camera);
+  }
+
+  let isDarkCached = isDark();
+  const themeChanged = () => { isDarkCached = isDark(); applyTheme(); };
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", themeChanged);
+  new MutationObserver(themeChanged).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+  applyTheme();
+  if (document.fonts) {
+    if (document.fonts.ready) document.fonts.ready.then(applyTheme);
+    document.fonts.addEventListener && document.fonts.addEventListener("loadingdone", applyTheme);
+  }
+  requestAnimationFrame(frame);
+
+  return {
+    setPeople,
+    focus(f) { userMoved = true; setXray(true); flyTo(focusPose(f)); },
+    reset() { setXray(false); flyTo(defaultPose()); userMoved = false; },
+    toggleXray() { setXray(ghostTarget === 1); },
+  };
+}
+
+/* ---------- start ---------- */
+let scene3d = null;
+const btnXray = $("#btnXray"), btnReset = $("#btnReset");
+function sceneFailed() {
+  $("#fallback").hidden = false; $("#scena").hidden = true; $("#hint").hidden = true;
+  btnXray.hidden = true; btnReset.hidden = true; scene3d = null;
+}
+try {
+  if (typeof THREE === "undefined" || !THREE.OrbitControls) throw new Error("brak three.js");
+  scene3d = createScene($("#scena"), $("#stage"), {
+    onPick: f => focusFloor(f),
+    onInteract: hideHint,
+    onXray: on => btnXray.setAttribute("aria-pressed", on ? "true" : "false"),
+    onLost: sceneFailed,
+  });
+} catch (e) {
+  sceneFailed();
+}
+btnXray.addEventListener("click", () => { if (scene3d) scene3d.toggleXray(); hideHint(); });
+btnReset.addEventListener("click", () => { if (scene3d) scene3d.reset(); });
+
+render();
+init();
+})();
+</script>
+
+</body></html>
