@@ -1,5 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Kibelki LOIII</title>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Kibelki LOIII</title><meta name="description" content="Interaktywna mapa szkolnych toalet LOIII z bieżącym obłożeniem."><link rel="icon" type="image/png" href="/kibel.png"><meta property="og:type" content="website"><meta property="og:title" content="Kibelki LOIII"><meta property="og:description" content="Interaktywna mapa szkolnych toalet LOIII z bieżącym obłożeniem."><meta property="og:image" content="/kibel.png"><meta property="og:image:alt" content="Kibelki LOIII"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Kibelki LOIII"><meta name="twitter:description" content="Interaktywna mapa szkolnych toalet LOIII z bieżącym obłożeniem."><meta name="twitter:image" content="/kibel.png"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -57,7 +56,8 @@ button{cursor:pointer}
 .hud>*{pointer-events:auto}
 .brand{background:color-mix(in srgb,var(--paper) 86%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
   border:1px solid var(--line);border-radius:14px;padding:8px 14px 9px;box-shadow:var(--shadow)}
-.brand h1{margin:0;font:800 22px/1.05 var(--font-display);letter-spacing:-.015em}
+.brand h1{display:flex;align-items:center;gap:8px;margin:0;font:800 22px/1.05 var(--font-display);letter-spacing:-.015em}
+.brand-logo{width:32px;height:32px;object-fit:contain;flex:none}
 .brand h1 em{font-style:normal;color:var(--accent)}
 .live{margin:3px 0 0;display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-soft)}
 .live i{width:8px;height:8px;border-radius:50%;background:var(--ink-soft);flex:none}
@@ -142,7 +142,7 @@ button{cursor:pointer}
     <canvas id="scena" aria-label="Model 3D budynku LOIII z kibelkami na trzech piętrach"></canvas>
     <div class="hud">
       <div class="brand">
-        <h1>Kibelki <em>LOIII</em></h1>
+        <h1><img class="brand-logo" src="/kibel.png" alt="">Kibelki <em>LOIII</em></h1>
         <p class="live" id="live" data-mode="connecting"><i aria-hidden="true"></i><span id="liveTxt">Łączenie…</span></p>
       </div>
       <div class="tools">
