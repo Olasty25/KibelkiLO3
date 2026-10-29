@@ -33,13 +33,14 @@ Plik `.env.local` jest ignorowany przez Git. Alternatywnie skopiuj
 
 ## Dane i prywatność
 
-Aplikacja zapisuje wyłącznie pseudonimowy, losowy identyfikator sesji, piętro
-i czas wpisu.
-Nie zapisuje ksywek, zdjęć ani adresów IP. Zaznaczenie wygasa po 20 minutach
+Aplikacja zapisuje pseudonimowy, losowy identyfikator sesji, wybraną ksywkę,
+piętro i czas wpisu. Ksywka jest widoczna dla innych osób korzystających
+z aplikacji, więc nie wpisuj danych, których nie chcesz ujawniać.
+Aplikacja nie zapisuje zdjęć ani adresów IP. Zaznaczenie wygasa po 20 minutach
 i jest usuwane z tabeli przy kolejnym żądaniu. Przeglądarka otrzymuje
 podpisane ciasteczko `HttpOnly`, aby użytkownik mógł usunąć własny wpis.
 
-Widok pokazuje bezimienne, bieżące obłożenie i odświeża się co 10 sekund.
+Widok pokazuje bieżące obłożenie i odświeża się co 10 sekund.
 Przed udostępnieniem osobom postronnym włącz ochronę dostępu do wdrożenia
 Vercel i udostępniaj aplikację wyłącznie właściwej społeczności szkolnej.
 Dostawca hostingu lub bazy może prowadzić własne techniczne logi zgodnie ze

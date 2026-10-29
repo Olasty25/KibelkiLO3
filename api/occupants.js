@@ -15,8 +15,13 @@ function ensureTable(sql) {
           session_id UUID PRIMARY KEY,
           entry_id UUID NOT NULL UNIQUE,
           floor SMALLINT NOT NULL CHECK (floor BETWEEN 0 AND 2),
+          nickname TEXT NOT NULL DEFAULT 'Anonim',
           created_at TIMESTAMPTZ NOT NULL DEFAULT now()
         )
+      `;
+      await sql`
+        ALTER TABLE bathroom_presence
+        ADD COLUMN IF NOT EXISTS nickname TEXT NOT NULL DEFAULT 'Anonim'
       `;
       await sql`
         CREATE INDEX IF NOT EXISTS bathroom_presence_created_at_idx
@@ -128,7 +133,7 @@ export default async function handler(req, res) {
 
     if (req.method === "GET") {
       const entries = await sql`
-        SELECT entry_id AS id, floor, session_id = ${sessionId}::uuid AS mine
+        SELECT entry_id AS id, floor, nickname, session_id = ${sessionId}::uuid AS mine
         FROM bathroom_presence
         ORDER BY created_at ASC
       `;
@@ -138,15 +143,20 @@ export default async function handler(req, res) {
     if (req.method === "POST") {
       const body = await readJsonBody(req);
       const floor = body?.floor;
+      const nickname = typeof body?.nickname === "string" ? body.nickname.trim() : "";
       if (!Number.isInteger(floor) || floor < 0 || floor > 2) {
         return sendError(res, 400, "Piętro musi być liczbą od 0 do 2.");
       }
+      if (!nickname || [...nickname].length > 24 || /[\u0000-\u001f\u007f]/.test(nickname)) {
+        return sendError(res, 400, "Ksywka musi mieć od 1 do 24 znaków.");
+      }
 
       await sql`
-        INSERT INTO bathroom_presence (session_id, entry_id, floor, created_at)
-        VALUES (${sessionId}::uuid, ${randomUUID()}::uuid, ${floor}, now())
+        INSERT INTO bathroom_presence (session_id, entry_id, floor, nickname, created_at)
+        VALUES (${sessionId}::uuid, ${randomUUID()}::uuid, ${floor}, ${nickname}, now())
         ON CONFLICT (session_id) DO UPDATE
-        SET entry_id = EXCLUDED.entry_id, floor = EXCLUDED.floor, created_at = now()
+        SET entry_id = EXCLUDED.entry_id, floor = EXCLUDED.floor,
+            nickname = EXCLUDED.nickname, created_at = now()
       `;
       return res.status(204).end();
     }
